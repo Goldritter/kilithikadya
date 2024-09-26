@@ -49,7 +49,9 @@ If you want to know the probabilites for a troop of 6 Inner Circle Companions le
 ```
 
 The Inner Companions choose to strike witht their Greatswords so they have 6 * 4 = 24 attacks) with a skill of 3+, a strenght of 6, AP -2, Damage 2 and Sustained 1 as well lethal. The Tyranid warriors have a toughness of 4 with 3 wounds and a save value of 4+.  
-
+<details open>
+ <summary>Huge output </summary>
+ 
 ```clojure
 {:average-critical-hits 4.000000000000001,
  :average-damage 24.444444444442077,
@@ -493,6 +495,8 @@ The Inner Companions choose to strike witht their Greatswords so they have 6 * 4
   47 1.5538901700945164E-21,
   48 3.984235309171945E-23}}
 ```
+</details>
+
 If you want to have a smaller output, because your are only interested in the average damage, wounds and kills, use `select-keys`. 
 ```clojure
 => (-> (get-probabilities-for :attacks 24 :skill 3 :save 4 :toughness 4 :strength 6
