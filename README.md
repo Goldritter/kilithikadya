@@ -503,12 +503,18 @@ If you want to have a smaller output, because your are only interested in the av
 {:average-wounds 12.222222222221038, :average-damage 24.444444444442077, :average-kills 8.148148148147358}
 ```
 
+## What you should know
+This project is work in progress and in an actuall alpha version. 
+Planned changes are acutally more probability statistics and features. 
+The keywords in the returned map **should** be fix, except the naming is horrible wrong and causes more trouble. 
+
 ## Bugs
 Actually none known.
 
 ## To-Do
-- [] add Feel No Pain to calculate received damage
-- [] better documentation
+- [] Add Feel No Pain to calculate received damage.
+- [] Better documentation.
+- [] Find a practicable way to handle rounding errors for multiple additions with doubles. 
 
 ## License
 
