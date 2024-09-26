@@ -22,24 +22,24 @@ Then call
 (get-probabilities-for <named arguments>)
 ```
 The named arguments are: 
--**:anti**: Anti-Ability of the weapon e.g Anti-Infantry 4+. *Default: 0*
--**:ap**: Ap-Value of the weapon. *Default: 0*
--**:attack-mod**: The value by which the to hit roll is modified. *Default: 0*
--**:attacks**: The number of attacks. *Default: 1*
--**:damage**: The damage of the weapone. *Default: 1*
--**:devastating?**: If *true* then the weapon has the Devastating-Ability.
--**:invul-save**: If the target has a invulnerbale save this value is any number between 2 and 6. *Default: 0*
--**:lethal?**: If *true* then the weapon has the Lethal-Ability. *Default: false*
--**:reroll-attack?**: If *true* then the attack roll can be rerolled if it fails. *Default: false*
--**:reroll-wound?**: If *true* then the wound roll can be rerolled if it fails. *Default: false*
--**:save**: The armor save value of the target. *Default: 6*
--**:save-mod**:  The modifier for the save roll of the target. *Default: 0*
--**:skill**: The ballistik or melee skill of the attacker. *Default: 4*
--**:strength**: The Strength of the weapon. *Default: 4*
--**:sustained**: The value of the Sustained-Ability of the weapon. If the weapon has none the value is 0. *Default: 0*
--**:toughness**: The tougness of the target. *Default: 4*
--**:wound-mod**: The modifier of the wound roll. *Default: 0*
--**:wounds**: The number of wounds of the target. *Default: 1*)
+- **:anti**: Anti-Ability of the weapon e.g Anti-Infantry 4+. *Default: 0*
+- **:ap**: Ap-Value of the weapon. *Default: 0*
+- **:attack-mod**: The value by which the to hit roll is modified. *Default: 0*
+- **:attacks**: The number of attacks. *Default: 1*
+- **:damage**: The damage of the weapone. *Default: 1*
+- **:devastating?**: If *true* then the weapon has the Devastating-Ability.
+- **:invul-save**: If the target has a invulnerbale save this value is any number between 2 and 6. *Default: 0*
+- **:lethal?**: If *true* then the weapon has the Lethal-Ability. *Default: false*
+- **:reroll-attack?**: If *true* then the attack roll can be rerolled if it fails. *Default: false*
+- **:reroll-wound?**: If *true* then the wound roll can be rerolled if it fails. *Default: false*
+- **:save**: The armor save value of the target. *Default: 6*
+- **:save-mod**:  The modifier for the save roll of the target. *Default: 0*
+- **:skill**: The ballistik or melee skill of the attacker. *Default: 4*
+- **:strength**: The Strength of the weapon. *Default: 4*
+- **:sustained**: The value of the Sustained-Ability of the weapon. If the weapon has none the value is 0. *Default: 0*
+- **:toughness**: The tougness of the target. *Default: 4*
+- **:wound-mod**: The modifier of the wound roll. *Default: 0*
+- **:wounds**: The number of wounds of the target. *Default: 1*
 
 ## Examples
 If you want to know the probabilites for a troop of 6 Inner Circle Companions lead by Azrael and a Lieutenant attacking a group of Tyranid Warriors you call: 
@@ -504,14 +504,12 @@ If you want to have a smaller output, because your are only interested in the av
 {:average-wounds 12.222222222221038, :average-damage 24.444444444442077, :average-kills 8.148148148147358}
 ```
 
-
-
 ## Bugs
 Actually none known.
 
 ## To-Do
--[] add Feel No Pain to calculate received damage
--[] better documentation
+- [] add Feel No Pain to calculate received damage
+- [] better documentation
 
 ## License
 
