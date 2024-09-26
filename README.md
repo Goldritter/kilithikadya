@@ -1,10 +1,10 @@
 # kilithikadya
 
-FIXME: description
+Kilithikadya (Near-future-to-come) means "The near-future" in Aledari. This Programm should allow to take a peek view into the near future of 
+
 
 ## Installation
-
-Kilithikadya (Near-future-to-come) means "The near-future" in Aledari. This Programm should allow to take a peek view into the near future of 
+Acutally you have to download the project and run it via [Leiningen](https://leiningen.org/).
 
 ## Usage
 
