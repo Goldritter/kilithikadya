@@ -49,7 +49,7 @@ If you want to know the probabilites for a troop of 6 Inner Circle Companions le
 ```
 
 The Inner Companions choose to strike witht their Greatswords so they have 6 * 4 = 24 attacks) with a skill of 3+, a strenght of 6, AP -2, Damage 2 and Sustained 1 as well lethal. The Tyranid warriors have a toughness of 4 with 3 wounds and a save value of 4+.  
-<details open>
+<details>
  <summary>Huge output </summary>
  
 ```clojure
