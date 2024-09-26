@@ -1,7 +1,6 @@
 # kilithikadya
 
-Kilithikadya (Near-future-to-come) means "The near-future" in Aledari. This Programm should allow to take a peek view into the near future of 
-
+Kilithikadya (Near-future-to-come) means "The near-future" in Aledari. This Programm should allow to take a peek view into the near future of the possible effects of your decisions during a round of Warhammer 40k. Mainly about the possibilities of wounds and damages your units can dish out against other units. 
 
 ## Installation
 Acutally you have to download the project and run it via [Leiningen](https://leiningen.org/).
