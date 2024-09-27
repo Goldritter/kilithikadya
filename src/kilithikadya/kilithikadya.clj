@@ -111,7 +111,8 @@
 (defn get-occurence-probability-map [distribution range lethal-hits occurence-probability]
   (reduce #(assoc %1 (+ lethal-hits %2) (* occurence-probability (.probability distribution %2))) (sorted-map) range))
 
-(defn get-probabilities-for [& {:keys [attacks skill strength ap damage
+(defn get-probabilities-for [& {:as opts
+                                :keys [attacks skill strength ap damage
                                        toughness save invul-save wounds
                                        sustained lethal? devastating? reroll-wound? reroll-attack?
                                        attack-mod wound-mod save-mod anti]
