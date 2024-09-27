@@ -109,12 +109,12 @@ First we include the namespace and add the needed stats of the units and weapons
                        :ap        -2
                        :damage    2})
 
-(def knight-master {:defender "Knight-master"
+(def knight-master {:defender "Knight Master"
                         :toughnesss 5
                         :wounds 4
                         :save 2
                         :invul-save 4})
-(def km-relic-weapon {:attacker "Deathwing Knights"
+(def km-relic-weapon {:attacker "Knight Master"
                       :attacks  6
                       :skill    2
                       :strength 7
