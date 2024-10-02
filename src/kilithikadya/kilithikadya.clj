@@ -85,7 +85,7 @@
         to-hit-distribution           (BinomialDistribution/of attacks to-hit-probability)
         to-hit-critical-distribution  (BinomialDistribution/of attacks to-hit-critically-probability)
 
-        hits-probability-map          (apply merge-with + (map #(sorted-map (+ (first %) (* sustained (second %)))
+        hits-probability-map          (apply merge-with + (map #(sorted-map (+ (first %) (* (if lethal? sustained  (inc sustained)) (second %)))
                                                                             (* (.probability to-hit-distribution (first %))
                                                                                (.probability to-hit-critical-distribution (second %))))
                                                                (combo/cartesian-product attack-range (if (= 0 sustained) [0] attack-range))))]
