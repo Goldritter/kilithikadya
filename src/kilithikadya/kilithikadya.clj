@@ -37,7 +37,7 @@
               (<  toughness strength) 3
               (= toughness strength) 4
               (<= strength (* 1/2 toughness)) 6
-              :default 5)
+              :else 5)
             (+ (max -1 (min 1 wound-mod) wound-mod))
             (min 6)
             (max 2)
@@ -63,9 +63,6 @@
                      (if consider-critical? 0 critical-prob))]
     (if reroll? (+ base-prob  (* base-prob (- 1 base-prob)))
         base-prob)))
-
-(defn get-binominal-distribution-for-minimum-roll [dice-count min-roll]
-  (BinomialDistribution/of dice-count (/ 1 (inc (- 6 min-roll)))))
 
 (defn get-hit-probabilities [& {:keys [attacks skill
                                        sustained lethal? reroll-attack?
@@ -111,8 +108,7 @@
 (defn get-occurence-probability-map [distribution range lethal-hits occurence-probability]
   (reduce #(assoc %1 (+ lethal-hits %2) (* occurence-probability (.probability distribution %2))) (sorted-map) range))
 
-(defn get-probabilities-for [& {:as opts
-                                :keys [attacks skill strength ap damage
+(defn get-probabilities-for [& {:keys [attacks skill strength ap damage
                                        toughness save invul-save wounds
                                        sustained lethal? devastating? reroll-wound? reroll-attack?
                                        attack-mod wound-mod save-mod anti]
@@ -134,8 +130,7 @@
                                        wound-mod      0
                                        save-mod       0
                                        anti           0}}]
-  (let [separate-critical-hits?                  (or lethal? (not= 0 sustained))
-        separate-critical-wounds?                devastating?
+  (let [separate-critical-wounds?                devastating?
         maximal-hits                             (+ attacks (* sustained attacks))
 
         hit-range                                (range 0 (inc maximal-hits))

@@ -1,6 +1,6 @@
 (ns kilithikadya.da-sparing
-  (:use  [kilithikadya.kilithikadya]) 
-  (:require [clojure.math.combinatorics :as combo]))
+  (:require [clojure.math.combinatorics :as combo]
+            [kilithikadya.kilithikadya :as k]))
 
 ;; The Inner Circle squad is lead by Azrael and attacks a swaud lead by a character model. 
 ;; This results into a Bonus of +1 if this squad attacks the squad of Belial and a malus of -1 to attacks if the squad of Belial attacks them.
@@ -84,5 +84,5 @@
   (apply merge-with merge 
          (pmap #(sorted-map 
                  (:attacker %) 
-                 (sorted-map (:defender %) (get-probabilities-for %))) 
+                 (sorted-map (:defender %) (k/get-probabilities-for %))) 
                attack-combinations)))
