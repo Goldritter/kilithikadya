@@ -25,7 +25,7 @@ The named arguments are:
 - **:ap**: Ap-Value of the weapon. *Default: 0*
 - **:attack-mod**: The value by which the to hit roll is modified. *Default: 0*
 - **:attacks**: The number of attacks. *Default: 1*
-- **:damage**: The damage of the weapone. *Default: 1*
+- **:damage**: The damage of the weapon. *Default: 1*
 - **:devastating?**: If *true* then the weapon has the Devastating-Ability.
 - **:invul-save**: If the target has a invulnerbale save this value is any number between 2 and 6. *Default: 0*
 - **:lethal?**: If *true* then the weapon has the Lethal-Ability. *Default: false*
@@ -33,7 +33,7 @@ The named arguments are:
 - **:reroll-wound?**: If *true* then the wound roll can be rerolled if it fails. *Default: false*
 - **:save**: The armor save value of the target. *Default: 6*
 - **:save-mod**:  The modifier for the save roll of the target. *Default: 0*
-- **:skill**: The ballistik or melee skill of the attacker. *Default: 4*
+- **:skill**: The ballistic or melee skill of the attacker. *Default: 4*
 - **:strength**: The Strength of the weapon. *Default: 4*
 - **:sustained**: The value of the Sustained-Ability of the weapon. If the weapon has none the value is 0. *Default: 0*
 - **:toughness**: The tougness of the target. *Default: 4*
@@ -41,7 +41,7 @@ The named arguments are:
 - **:wounds**: The number of wounds of the target. *Default: 1*
 
 ## Examples
-Say a squad of Inner Circle Companions lead b Azrael are sparring against a squad of Deathwing Knights by Belial and we want to know the probabilties who might be better. 
+Say a squad of Inner Circle Companions lead by Azrael are sparring against a squad of Deathwing Knights by Belial and we want to know the probabilties who might be better. 
 
 First we include the namespace and add the needed stats of the units and weapons.
 
@@ -50,7 +50,7 @@ First we include the namespace and add the needed stats of the units and weapons
   (:use  [kilithikadya.kilithikadya]) 
   (:require [clojure.math.combinatorics :as combo]))
 
-;; The Inner Circle squad is lead by Azrael and attacks a swaud lead by a character model. 
+;; The Inner Circle squad is lead by Azrael and attacks a sqaud lead by a character model. 
 ;; This results into a Bonus of +1 if this squad attacks the squad of Belial and a malus of -1 to attacks if the squad of Belial attacks them.
 (def azrael {:defender "Azrael"
              :toughnesss 4
@@ -716,7 +716,7 @@ Planned changes are acutally more probability statistics and features.
 The keywords in the returned map **should** be fix, except the naming is horrible wrong and causes more trouble. 
 
 ## Bugs
-Actually none known.
+Actually none known, but this does not mean that none exists. 😞
 
 ## To-Do
 - [] Add Feel No Pain to calculate received damage.
