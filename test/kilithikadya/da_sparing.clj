@@ -2,7 +2,7 @@
   (:require [clojure.math.combinatorics :as combo]
             [kilithikadya.kilithikadya :as k]))
 
-;; The Inner Circle squad is lead by Azrael and attacks a swaud lead by a character model. 
+;; The Inner Circle squad is lead by Azrael and attacks a squad lead by a character model.
 ;; This results into a Bonus of +1 if this squad attacks the squad of Belial and a malus of -1 to attacks if the squad of Belial attacks them.
 (def azrael {:defender   "Azrael"
              :toughnesss 4
