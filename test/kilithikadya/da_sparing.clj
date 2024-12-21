@@ -1,11 +1,12 @@
 (ns kilithikadya.da-sparing
   (:require [clojure.math.combinatorics :as combo]
+            [clojure.tools.logging :as LOG]
             [kilithikadya.kilithikadya :as k]))
 
 ;; The Inner Circle squad is lead by Azrael and attacks a swaud lead by a character model. 
 ;; This results into a Bonus of +1 if this squad attacks the squad of Belial and a malus of -1 to attacks if the squad of Belial attacks them.
 (def azrael {:defender   "Azrael"
-             :toughnesss 4
+             :toughness  4
              :wounds     6
              :save       2
              :invul-save 4
@@ -31,7 +32,7 @@
                                       :attack-mod   1})
 
 (def inner-circle-companions {:defender   "Inner Circle Companions"
-                              :toughnesss 4
+                              :toughness  4
                               :wounds     3
                               :save       3
                               :invul-save 4
@@ -56,12 +57,12 @@
                                 :sustained  1
                                 :attack-mod 1})
 
-
 (def belial {:defender   "Belial"
-             :toughnesss 5
+             :toughness  5
              :wounds     6
              :save       2
              :invul-save 4})
+
 (def the-sword-of-silence {:attacker "Belial"
                            :attacks  6
                            :skill    2
@@ -70,7 +71,7 @@
                            :damage   2})
 
 (def deathwing-knights {:defender   "Deathwing Knights"
-                        :toughnesss 5
+                        :toughness  5
                         :wounds     4
                         :save       2
                         :invul-save 4})
@@ -88,10 +89,11 @@
                                  :damage   2})
 
 (def knight-master {:defender   "Knight Master"
-                    :toughnesss 5
+                    :toughness  5
                     :wounds     4
                     :save       2
                     :invul-save 4})
+
 (def km-relic-weapon {:attacker "Knight Master"
                       :attacks  6
                       :skill    2
@@ -109,7 +111,7 @@
 
 (def result
   (apply merge-with merge
-         (pmap #(sorted-map
-                  (:attacker %)
-                  (sorted-map (:defender %) (k/get-probabilities-for %)))
-               attack-combinations)))
+         (map #(sorted-map
+                         (:attacker %)
+                         (sorted-map (:defender %) (k/get-probabilities-for %)))
+                     attack-combinations)))
