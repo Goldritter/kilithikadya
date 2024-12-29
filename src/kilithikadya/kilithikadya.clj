@@ -92,26 +92,28 @@
   (let [separate-critical-hits? (or lethal? (not= 0 sustained))
         attack-range (range 0 (inc attacks))
         to-hit-probability (get-to-hit-probability skill attack-mod reroll-attack? (not separate-critical-hits?))
-        to-hit-critically-probability (* (- 1 to-hit-probability)
-                                         (if separate-critical-hits? (get-critical-wound-probability 6 0 reroll-attack? true) 0))
+        to-hit-critically-probability (* (if reroll-attack? (- 1 to-hit-probability) 1)
+                                         (if separate-critical-hits? (get-to-hit-probability 6 0 reroll-attack? true) 0))
 
+        additional-hits (if lethal? sustained (inc sustained))
         to-hit-distribution (BinomialDistribution/of attacks to-hit-probability)
         to-hit-critical-distribution (BinomialDistribution/of attacks to-hit-critically-probability)
 
-        to-wound-hits-probability-map (if (not= 0 sustained)
+        to-wound-hits-probability-map (if separate-critical-hits?
                                         (apply merge-with + (map #(sorted-map
                                                                     (+ (first %)
-                                                                       (* (second %) (if lethal? sustained (inc sustained))))
+                                                                       (* (second %) additional-hits))
                                                                     (* (.probability to-hit-distribution (first %))
                                                                        (.probability to-hit-critical-distribution (second %))
                                                                        ))
                                                                  (filter #(>= attacks (+ (first %) (second %)))
                                                                          (combo/cartesian-product attack-range attack-range))))
-                                        (reduce #(assoc %1 %2 (.probability to-hit-distribution %2)) (sorted-map) attack-range))
+                                         (reduce #(assoc %1 %2 (.probability to-hit-distribution %2)) (sorted-map) attack-range))
         ]
 
 
     (sorted-map
+      :attacks attack-range
       :average-hits (.getMean to-hit-distribution)
       :lethal-hits-probabilities (if lethal? (reduce #(assoc %1 %2 (.probability to-hit-critical-distribution %2))
                                                      (sorted-map) attack-range)
@@ -119,8 +121,8 @@
       :to-hit-probability to-hit-probability
       :to-hit-critical-probability to-hit-critically-probability
       :average-critical-hits (.getMean to-hit-critical-distribution)
-      :average-extra-hits (* sustained (.getMean to-hit-critical-distribution))
-      :average-total-hits (+ (* sustained (.getMean to-hit-critical-distribution))
+      :average-extra-hits (* additional-hits (.getMean to-hit-critical-distribution))
+      :average-total-hits (+ (* additional-hits (.getMean to-hit-critical-distribution))
                              (.getMean to-hit-distribution))
       :to-wound-hits-probability-map to-wound-hits-probability-map
       :expected-wounds-to-hits (apply + (map #(* (key %) (val %)) to-wound-hits-probability-map)))))
@@ -148,7 +150,7 @@
                                        wound-mod      0
                                        save-mod       0
                                        }}]
-  (let [separate-critical-wounds? (or (not= anti) devastating?)
+  (let [separate-critical-wounds? (or (not= 0 anti) devastating?)
         maximal-hits (+ attacks (* sustained attacks))
 
         hit-range (range 0 (inc maximal-hits))
