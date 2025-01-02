@@ -506,10 +506,10 @@
 
 (defn get-averages [key-val]
   (map #(postwalk round-if-number
-                  (assoc (select-keys (val %) [:expected-wounds :expected-damage :expected-kills :attacks :damage :wounds-needed-to-kill :expected-wounds-to-hits])
+                  (assoc (select-keys (val %) [:expected-wounds :expected-damage :expected-kills :attacks :damage :wounds-needed-to-kill :expected-wounds-to-hits :median-damage :median-wounds :median-kills :expected-point-kill-ratio])
                     :defender (key %)
                     :attacker (key key-val)))
        (val key-val)))
 
 (comment
-  (CSV/write-csv "calculations.csv" [:attacker :defender :expected-wounds :expected-damage :expected-kills :expected-wounds-to-hits :attacks :wounds-needed-to-kill :damage] (apply concat (map get-averages result))))
+  (CSV/write-csv "calculations.csv" [:attacker :defender :expected-wounds :expected-damage :expected-kills :expected-wounds-to-hits :median-damage :median-wounds :median-kills :attacks :wounds-needed-to-kill :damage :expected-point-kill-ratio] (apply concat (map get-averages result))))
