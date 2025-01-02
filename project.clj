@@ -1,6 +1,6 @@
 (defproject com.github.goldritter/kilithikadya "0.1.1-a.5"
   :description "Probability calculation application for Warhammer 40k 10'th edition."
-  :url "http://example.com/FIXME"
+  :url "https://github.com/Goldritter/kilithikadya"
   :license {:name "MIT"
             :url "https://choosealicense.com/licenses/mit"
             :comment "MIT License"
