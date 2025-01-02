@@ -108,7 +108,7 @@
                                                                        ))
                                                                  (filter #(>= attacks (+ (first %) (second %)))
                                                                          (combo/cartesian-product attack-range attack-range))))
-                                         (reduce #(assoc %1 %2 (.probability to-hit-distribution %2)) (sorted-map) attack-range))
+                                        (reduce #(assoc %1 %2 (.probability to-hit-distribution %2)) (sorted-map) attack-range))
         ]
 
 
@@ -130,7 +130,7 @@
 (defn get-probabilities-for [& {:keys [attacks skill strength ap damage anti
                                        toughness save invul-save wounds
                                        sustained lethal? devastating? reroll-wound? reroll-attack?
-                                       attack-mod wound-mod save-mod]
+                                       attack-mod wound-mod save-mod points]
                                 :or   {anti           0
                                        attacks        1
                                        skill          4
@@ -149,6 +149,7 @@
                                        attack-mod     0
                                        wound-mod      0
                                        save-mod       0
+                                       points         -1
                                        }}]
   (let [separate-critical-wounds? (or (not= 0 anti) devastating?)
         maximal-hits (+ attacks (* sustained attacks))
@@ -221,11 +222,21 @@
                                       )
         expected-damage (apply + (map #(* (* damage (key %)) (val %)) received-wounds-probability))
         expected-wounds (apply + (map #(* (key %) (val %)) received-wounds-probability))
-        wounds-needed-to-kill-ratio (min 1 (/ damage wounds))]
+        median-wounds (first (reduce #(if (>= 0.5 (second %1))
+                                        [(key %2) (+ (second %) (val %2))]
+                                        %1)
+                                     [0 0]
+                                     (sort-by key received-wounds-probability)))
+
+        median-damage (* damage median-wounds)
+        wounds-needed-to-kill-ratio (min 1 (/ damage wounds))
+        expected-kills (* wounds-needed-to-kill-ratio expected-wounds)
+        ]
 
     (merge hit-probability-informations
            (sorted-map
              :attacks attacks
+             :points points
              :damage damage
              :anti anti
              :strength strength
@@ -243,6 +254,10 @@
              :received-damage-probability (reduce #(assoc %1 (* damage (key %2)) (val %2)) (sorted-map) received-wounds-probability)
              :expected-damage expected-damage
              :expected-wounds expected-wounds
-             :expected-kills (* expected-wounds wounds-needed-to-kill-ratio)
+             :median-damage median-damage
+             :median-wounds median-wounds
+             :expected-kills expected-kills
+             :expected-point-kill-ratio (/ points expected-kills)
+             :median-kills (* median-wounds wounds-needed-to-kill-ratio)
              :min-wound-probability (get-ccdf-for received-wounds-probability)
              ))))
