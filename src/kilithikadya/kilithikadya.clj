@@ -45,21 +45,23 @@
                                 anti               0
                                 reroll?            false
                                 consider-critical? true}}]
-  (let [min-roll (->>
+  (let [used-wound-mod (if (pos? wound-mod) (max -1 (* -1 wound-mod))
+                                            (min 1 (* -1 wound-mod)))
+        min-roll (->>
                    (cond
                      (<= (* 2 toughness) strength) 2
                      (< toughness strength) 3
                      (= toughness strength) 4
                      (<= strength (* 1/2 toughness)) 6
                      :else 5)
-                   (+ (max -1 (min 1 wound-mod) wound-mod))
+                   (+ used-wound-mod)
                    (min 6)
                    (max 2))
 
         base-prob (get-roll-probability min-roll (cond
-                                                   (not= 0 anti) anti
-                                                   consider-critical? 6
-                                                   :else 5))
+                                                   (not= 0 anti) (dec anti)
+                                                   consider-critical? 5
+                                                   :else 6))
         ]
 
     (if reroll?
@@ -156,7 +158,7 @@
 
         hit-range (range 0 (inc maximal-hits))
         wound-probability (get-wound-probability strength toughness :reroll? reroll-wound?
-                                                 :wound-mod wound-mod :anti anti :consider-critical? (not separate-critical-wounds?))
+                                                 :wound-mod wound-mod :anti anti :consider-critical? separate-critical-wounds?)
         critical-wound-probability (* (- 1 wound-probability)
                                       (if separate-critical-wounds? (get-critical-wound-probability 1 10 :anti anti :reroll? reroll-wound?) 0))
 
@@ -185,8 +187,15 @@
                                                      (* (get-in hit-probability-informations [:to-wound-hits-probability-map (first %)] 0.0)
                                                         (get-in hit-probability-informations [:lethal-hits-probabilities (second %)] 0.0)))
                                                   hit-combinations)))
-                              (:to-wound-hits-probability-map hit-probability-informations)
-                              )
+
+                              (apply merge-with +
+                                     (doall (pmap #(get-lethal-wounds-occurence-probability-map
+                                                     (get wound-probability-distributions %)
+                                                     (range 0 (inc %))
+                                                     0
+                                                     (get-in hit-probability-informations [:to-wound-hits-probability-map %] 0.0))
+                                            (keys (:to-wound-hits-probability-map hit-probability-informations))
+                                            ))))
 
         critical-wound-probabilities (apply merge-with +
                                             (pmap #(get-lethal-wounds-occurence-probability-map
