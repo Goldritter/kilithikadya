@@ -1,4 +1,4 @@
-(defproject com.github.goldritter/kilithikadya "0.1.1-a.5"
+(defproject com.github.goldritter/kilithikadya "0.1.1-a.6"
   :description "Probability calculation application for Warhammer 40k 10'th edition."
   :url "https://github.com/Goldritter/kilithikadya"
   :license {:name "MIT"
