@@ -60,8 +60,8 @@
 
         base-prob (get-roll-probability min-roll (cond
                                                    (not= 0 anti) (dec anti)
-                                                   consider-critical? 5
-                                                   :else 6))
+                                                   consider-critical? 6
+                                                   :else 5))
         ]
 
     (if reroll?
@@ -158,7 +158,7 @@
 
         hit-range (range 0 (inc maximal-hits))
         wound-probability (get-wound-probability strength toughness :reroll? reroll-wound?
-                                                 :wound-mod wound-mod :anti anti :consider-critical? separate-critical-wounds?)
+                                                 :wound-mod wound-mod :anti anti :consider-critical? (not separate-critical-wounds?))
         critical-wound-probability (* (- 1 wound-probability)
                                       (if separate-critical-wounds? (get-critical-wound-probability 1 10 :anti anti :reroll? reroll-wound?) 0))
 
