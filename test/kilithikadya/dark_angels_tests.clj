@@ -650,6 +650,27 @@
                           :invul-save 5
                           :type       :infantry}
 
+                         {:defender  "Hive Tyrant"
+                          :toughness 10
+                          :wounds    10
+                          :save      2
+                          :invul-save 4
+                          :type      :monster}
+
+                         {:defender  "Hive Tyrant guarded"
+                          :toughness 10
+                          :wounds    10
+                          :save      2
+                          :invul-save 4
+                          :feel-no-pain 5
+                          :type      :monster}
+
+                         {:defender  "Tyranid Warrior"
+                          :toughness 5
+                          :wounds    3
+                          :save      4
+                          :type      :infantry}
+
                          {:defender  "Outrider"
                           :toughness 5
                           :wounds    4
@@ -693,7 +714,7 @@
                                                          sternguard-veteran-bolt-rifle-vehicle-librarian sternguard-veteran-bolt-rifle-vehicle-librarian-standing
                                                          sternguard-veteran-bolt-rifle-vehicle-librarian-standing-pyro-oath-12-inch sternguard-veteran-heavy-bolter-vehicle-librarian-standing
                                                          sternguard-veteran-heavy-bolter-vehicle-librarian sternguard-veteran-heavy-bolter-vehicle-librarian-standing-pyro-oath]
-                                                        (:vehicle defender)))))
+                                                        (concat (:vehicle defender) (:monster defender))))))
 
 (def result
   (apply merge-with merge
@@ -714,4 +735,6 @@
        (val key-val)))
 
 (comment
-  (CSV/write-csv "calculations.csv" [:attacker :defender :expected-wounds :expected-damage :expected-kills :expected-point-kill-ratio :expected-wounds-to-hits :attacks :wounds-needed-to-kill :damage :points] (apply concat (map get-averages result))))
+  (CSV/write-csv "calculations.csv" [:attacker :defender :expected-wounds :expected-damage :expected-kills :expected-point-kill-ratio :expected-wounds-to-hits :attacks :wounds-needed-to-kill :damage :points] (apply concat (map get-averages result)))
+  
+  )
