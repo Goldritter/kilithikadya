@@ -27,6 +27,7 @@ The named arguments are:
 - **:attacks**: The number of attacks. *Default: 1*
 - **:damage**: The damage of the weapon. *Default: 1*
 - **:devastating?**: If *true* then the weapon has the Devastating-Ability.
+- **:feel-no-pain**: The feel no pain save value. *Default: 0*
 - **:invul-save**: If the target has a invulnerbale save this value is any number between 2 and 6. *Default: 0*
 - **:lethal?**: If *true* then the weapon has the Lethal-Ability. *Default: false*
 - **:reroll-attack?**: If *true* then the attack roll can be rerolled if it fails. *Default: false*
@@ -39,6 +40,7 @@ The named arguments are:
 - **:toughness**: The tougness of the target. *Default: 4*
 - **:wound-mod**: The modifier of the wound roll. *Default: 0*
 - **:wounds**: The number of wounds of the target. *Default: 1*
+
 
 ## Examples
 Say a squad of Inner Circle Companions lead by Azrael are sparring against a squad of Deathwing Knights by Belial and we want to know the probabilties who might be better. 
@@ -1354,7 +1356,6 @@ The keywords in the returned map **should** be fix, except the naming is horribl
 Actually none known, but this does not mean that none exists. 😞
 
 ## To-Do
-- [] Add Feel No Pain to calculate received damage.
 - [] Better documentation.
 - [] Find a practicable way to handle rounding errors for multiple additions with doubles. 
 
