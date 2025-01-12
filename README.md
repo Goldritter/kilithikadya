@@ -1355,10 +1355,11 @@ Planned changes are acutally more probability statistics and features.
 The keywords in the returned map **should** be fix, except the naming is horrible wrong and causes more trouble. 
 
 ## Bugs
-Actually none known, but this does not mean that none exists. 😞
+The project is not mature and in constant changes. So bugs can and will be occur. 😞
 
 ## To-Do
 - [] Better documentation.
+- [] Feel no pain calculation.
 - [] Find a practicable way to handle rounding errors for multiple additions with doubles. 
 
 ## Disclaimer

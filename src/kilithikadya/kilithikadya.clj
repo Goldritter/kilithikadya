@@ -128,154 +128,153 @@
 
 (defn adjust-probabilities-with-feel-no-pain [wound-probabilites feel-no-pain]
   (let [fail-feel-no-pain-probability (- 1 (get-roll-probability feel-no-pain 6))]
-    (apply merge-with + (map #(calculate-distribution-probability (key %) (val %) (BinomialDistribution/of (key %) fail-feel-no-pain-probability)) 
-         wound-probabilites))))
+    (apply merge-with + (map #(calculate-distribution-probability (key %) (val %) (BinomialDistribution/of (key %) fail-feel-no-pain-probability))
+                             wound-probabilites))))
 
-(defn- calculate-received-wound-probabilities [devastating? wounds-by-failed-save-test critical-wound-probabilities maximal-hits hit-combinations feel-no-pain]
-  (let [probabilites (if devastating?
-                       (apply merge-with +
-                              (pmap #(sorted-map (+ (first %) (second %))
-                                                 (*
-                                                  (get wounds-by-failed-save-test (first %) 0.0)
-                                                  (get critical-wound-probabilities (second %) 0.0)))
+(defn- calculate-received-wound-probabilities [devastating? wounds-by-failed-save-test critical-wound-probabilities maximal-hits hit-combinations]
+  (if devastating?
+    (apply merge-with +
+           (pmap #(sorted-map (+ (first %) (second %))
+                              (*
+                               (get wounds-by-failed-save-test (first %) 0.0)
+                               (get critical-wound-probabilities (second %) 0.0)))
 
-                                    (filter #(>= maximal-hits (+ (first %) (second %)))
-                                            (combo/cartesian-product (distinct (map #(apply + %) hit-combinations))
-                                                                     (range 0 (inc maximal-hits))))))
-                       wounds-by-failed-save-test)]
-    (if (>= 0 feel-no-pain) probabilites (adjust-probabilities-with-feel-no-pain probabilites feel-no-pain))))
+                 (filter #(>= maximal-hits (+ (first %) (second %)))
+                         (combo/cartesian-product (distinct (map #(apply + %) hit-combinations))
+                                                  (range 0 (inc maximal-hits))))))
+    wounds-by-failed-save-test))
 
-  (defn- calculate-wounds-by-failed-save-test [pass-save-test-probability wound-probabilities devastating? anti critical-wound-probabilities]
-    (merge-with +
+(defn- calculate-wounds-by-failed-save-test [pass-save-test-probability wound-probabilities devastating? anti critical-wound-probabilities]
+  (merge-with +
+              (apply merge-with +
+                     (doall (pmap #(get-passed-wound-probability pass-save-test-probability (key %) (val %))
+                                  wound-probabilities)))
+              (if (and (not devastating?) (not= 0 anti))
                 (apply merge-with +
                        (doall (pmap #(get-passed-wound-probability pass-save-test-probability (key %) (val %))
-                                    wound-probabilities)))
-                (if (and (not devastating?) (not= 0 anti))
-                  (apply merge-with +
-                         (doall (pmap #(get-passed-wound-probability pass-save-test-probability (key %) (val %))
-                                      critical-wound-probabilities)))
-                  {})))
+                                    critical-wound-probabilities)))
+                {})))
 
-  (defn- calculate-critical-wound-probabilities [critical-wound-probability-distributions hit-probability-informations maximal-hits]
+(defn- calculate-critical-wound-probabilities [critical-wound-probability-distributions hit-probability-informations maximal-hits]
+  (apply merge-with +
+         (pmap #(get-lethal-wounds-occurence-probability-map
+                 (get critical-wound-probability-distributions %)
+                 (range 0 (inc %))
+                 0
+
+                 (get-in hit-probability-informations [:to-wound-hits-probability-map %] 0.0))
+               (range 0 (inc maximal-hits)))))
+
+(defn- calculate-wound-probabilities [lethal? wound-probability-distributions hit-probability-informations hit-combinations]
+  (if lethal?
     (apply merge-with +
-           (pmap #(get-lethal-wounds-occurence-probability-map
-                   (get critical-wound-probability-distributions %)
-                   (range 0 (inc %))
-                   0
+           (doall (pmap #(get-lethal-wounds-occurence-probability-map
+                          (get wound-probability-distributions (first %))
+                          (range 0 (inc (first %)))
+                          (second %)
+                          (* (get-in hit-probability-informations [:to-wound-hits-probability-map (first %)] 0.0)
+                             (get-in hit-probability-informations [:lethal-hits-probabilities (second %)] 0.0)))
+                        hit-combinations)))
 
-                   (get-in hit-probability-informations [:to-wound-hits-probability-map %] 0.0))
-                 (range 0 (inc maximal-hits)))))
+    (apply merge-with +
+           (doall (pmap #(get-lethal-wounds-occurence-probability-map
+                          (get wound-probability-distributions %)
+                          (range 0 (inc %))
+                          0
+                          (get-in hit-probability-informations [:to-wound-hits-probability-map %] 0.0))
+                        (keys (:to-wound-hits-probability-map hit-probability-informations)))))))
 
-  (defn- calculate-wound-probabilities [lethal? wound-probability-distributions hit-probability-informations hit-combinations]
-    (if lethal?
-      (apply merge-with +
-             (doall (pmap #(get-lethal-wounds-occurence-probability-map
-                            (get wound-probability-distributions (first %))
-                            (range 0 (inc (first %)))
-                            (second %)
-                            (* (get-in hit-probability-informations [:to-wound-hits-probability-map (first %)] 0.0)
-                               (get-in hit-probability-informations [:lethal-hits-probabilities (second %)] 0.0)))
-                          hit-combinations)))
+(defn get-probabilities-for [& {:keys [attacks skill strength ap damage anti
+                                       toughness save invul-save wounds feel-no-pain
+                                       sustained lethal? devastating? reroll-wound? reroll-attack?
+                                       attack-mod wound-mod save-mod points]
+                                :or   {anti           0
+                                       attacks        1
+                                       skill          4
+                                       strength       4
+                                       ap             0
+                                       wounds         1
+                                       damage         1
+                                       toughness      4
+                                       save           6
+                                       invul-save     0
+                                       sustained      0
+                                       feel-no-pain 0
+                                       lethal?        false
+                                       devastating?   false
+                                       reroll-wound?  false
+                                       reroll-attack? false
+                                       attack-mod     0
+                                       wound-mod      0
+                                       save-mod       0
+                                       points         -1}}]
+  (let [separate-critical-wounds? (or (not= 0 anti) devastating?)
+        maximal-hits (+ attacks (* sustained attacks))
 
-      (apply merge-with +
-             (doall (pmap #(get-lethal-wounds-occurence-probability-map
-                            (get wound-probability-distributions %)
-                            (range 0 (inc %))
-                            0
-                            (get-in hit-probability-informations [:to-wound-hits-probability-map %] 0.0))
-                          (keys (:to-wound-hits-probability-map hit-probability-informations)))))))
+        hit-range (range 0 (inc maximal-hits))
+        wound-probability (get-wound-probability strength toughness :reroll? reroll-wound?
+                                                 :wound-mod wound-mod :anti anti :consider-critical? (not separate-critical-wounds?))
+        critical-wound-probability (* (- 1 wound-probability)
+                                      (if separate-critical-wounds? (get-critical-wound-probability 1 10 :anti anti :reroll? reroll-wound?) 0))
 
-  (defn get-probabilities-for [& {:keys [attacks skill strength ap damage anti
-                                         toughness save invul-save wounds feel-no-pain
-                                         sustained lethal? devastating? reroll-wound? reroll-attack?
-                                         attack-mod wound-mod save-mod points]
-                                  :or   {anti           0
-                                         attacks        1
-                                         skill          4
-                                         strength       4
-                                         ap             0
-                                         wounds         1
-                                         damage         1
-                                         toughness      4
-                                         save           6
-                                         invul-save     0
-                                         sustained      0
-                                         feel-no-pain 0
-                                         lethal?        false
-                                         devastating?   false
-                                         reroll-wound?  false
-                                         reroll-attack? false
-                                         attack-mod     0
-                                         wound-mod      0
-                                         save-mod       0
-                                         points         -1}}]
-    (let [separate-critical-wounds? (or (not= 0 anti) devastating?)
-          maximal-hits (+ attacks (* sustained attacks))
+        pass-save-test-probability (get-save-probability save invul-save ap save-mod)
 
-          hit-range (range 0 (inc maximal-hits))
-          wound-probability (get-wound-probability strength toughness :reroll? reroll-wound?
-                                                   :wound-mod wound-mod :anti anti :consider-critical? (not separate-critical-wounds?))
-          critical-wound-probability (* (- 1 wound-probability)
-                                        (if separate-critical-wounds? (get-critical-wound-probability 1 10 :anti anti :reroll? reroll-wound?) 0))
+        hit-probability-informations (get-hit-probabilities :attacks attacks :attack-mod attack-mod :skill skill
+                                                            :lethal? lethal? :sustained sustained :reroll-attack? reroll-attack?)
+        hit-combinations (filter #(>= maximal-hits (apply + %))
+                                 (combo/cartesian-product (keys (:to-wound-hits-probability-map hit-probability-informations))
+                                                          (keys (:lethal-hits-probabilities hit-probability-informations))))
 
-          pass-save-test-probability (get-save-probability save invul-save ap save-mod)
+        wound-probability-distributions (apply merge
+                                               (doall (map #(sorted-map % (BinomialDistribution/of % wound-probability))
+                                                           hit-range)))
 
-          hit-probability-informations (get-hit-probabilities :attacks attacks :attack-mod attack-mod :skill skill
-                                                              :lethal? lethal? :sustained sustained :reroll-attack? reroll-attack?)
-          hit-combinations (filter #(>= maximal-hits (apply + %))
-                                   (combo/cartesian-product (keys (:to-wound-hits-probability-map hit-probability-informations))
-                                                            (keys (:lethal-hits-probabilities hit-probability-informations))))
+        critical-wound-probability-distributions (apply merge
+                                                        (doall (map #(sorted-map % (BinomialDistribution/of % critical-wound-probability))
+                                                                    hit-range)))
 
-          wound-probability-distributions (apply merge
-                                                 (doall (map #(sorted-map % (BinomialDistribution/of % wound-probability))
-                                                             hit-range)))
+        wound-probabilities (calculate-wound-probabilities lethal? wound-probability-distributions hit-probability-informations hit-combinations)
+        critical-wound-probabilities (calculate-critical-wound-probabilities critical-wound-probability-distributions hit-probability-informations maximal-hits)
+        wounds-by-failed-save-test (calculate-wounds-by-failed-save-test pass-save-test-probability wound-probabilities devastating? anti critical-wound-probabilities)
+        received-wounds-probability (calculate-received-wound-probabilities devastating? wounds-by-failed-save-test critical-wound-probabilities maximal-hits hit-combinations)
 
-          critical-wound-probability-distributions (apply merge
-                                                          (doall (map #(sorted-map % (BinomialDistribution/of % critical-wound-probability))
-                                                                      hit-range)))
+        expected-damage (apply + (map #(* (* damage (key %)) (val %)) received-wounds-probability))
+        expected-wounds (apply + (map #(* (key %) (val %)) received-wounds-probability))
+        median-wounds (first (reduce #(if (>= 0.5 (second %1))
+                                        [(key %2) (+ (second %) (val %2))]
+                                        %1)
+                                     [0 0]
+                                     (sort-by key received-wounds-probability)))
 
-          wound-probabilities (calculate-wound-probabilities lethal? wound-probability-distributions hit-probability-informations hit-combinations)
-          critical-wound-probabilities (calculate-critical-wound-probabilities critical-wound-probability-distributions hit-probability-informations maximal-hits)
-          wounds-by-failed-save-test (calculate-wounds-by-failed-save-test pass-save-test-probability wound-probabilities devastating? anti critical-wound-probabilities)
-          received-wounds-probability (calculate-received-wound-probabilities devastating? wounds-by-failed-save-test critical-wound-probabilities maximal-hits hit-combinations feel-no-pain)
+        median-damage (* damage median-wounds)
+        wounds-needed-to-kill-ratio (min 1 (/ damage wounds))
+        expected-kills (* wounds-needed-to-kill-ratio expected-wounds)]
 
-          expected-damage (apply + (map #(* (* damage (key %)) (val %)) received-wounds-probability))
-          expected-wounds (apply + (map #(* (key %) (val %)) received-wounds-probability))
-          median-wounds (first (reduce #(if (>= 0.5 (second %1))
-                                          [(key %2) (+ (second %) (val %2))]
-                                          %1)
-                                       [0 0]
-                                       (sort-by key received-wounds-probability)))
-
-          median-damage (* damage median-wounds)
-          wounds-needed-to-kill-ratio (min 1 (/ damage wounds))
-          expected-kills (* wounds-needed-to-kill-ratio expected-wounds)]
-
-      (merge hit-probability-informations
-             (sorted-map
-              :attacks attacks
-              :points points
-              :damage damage
-              :anti anti
-              :strength strength
-              :toughness toughness
-              :feel-no-pain feel-no-pain
-              :wounds-needed-to-kill wounds-needed-to-kill-ratio
-              :hit-combinations hit-combinations
-              :maximal-hits maximal-hits
-              :wound-probability wound-probability
-              :critical-wound-probability critical-wound-probability
-              :wound-probabilities wound-probabilities
-              :critical-wound-probabilities critical-wound-probabilities
-              :pass-save-test-probability pass-save-test-probability
-              :wounds-by-failed-save wounds-by-failed-save-test
-              :received-wounds-probability received-wounds-probability
-              :received-damage-probability (reduce #(assoc %1 (* damage (key %2)) (val %2)) (sorted-map) received-wounds-probability)
-              :expected-damage expected-damage
-              :expected-wounds expected-wounds
-              :median-damage median-damage
-              :median-wounds median-wounds
-              :expected-kills expected-kills
-              :expected-point-kill-ratio (/ points expected-kills)
-              :median-kills (* median-wounds wounds-needed-to-kill-ratio)
-              :min-wound-probability (get-ccdf-for received-wounds-probability)))))
+    (merge hit-probability-informations
+           (sorted-map
+            :attacks attacks
+            :points points
+            :damage damage
+            :anti anti
+            :strength strength
+            :toughness toughness
+            :feel-no-pain feel-no-pain
+            :wounds-needed-to-kill wounds-needed-to-kill-ratio
+            :hit-combinations hit-combinations
+            :maximal-hits maximal-hits
+            :wound-probability wound-probability
+            :critical-wound-probability critical-wound-probability
+            :wound-probabilities wound-probabilities
+            :critical-wound-probabilities critical-wound-probabilities
+            :pass-save-test-probability pass-save-test-probability
+            :wounds-by-failed-save wounds-by-failed-save-test
+            :received-wounds-probability received-wounds-probability
+            :received-damage-probability (reduce #(assoc %1 (* damage (key %2)) (val %2)) (sorted-map) received-wounds-probability)
+            :expected-damage expected-damage
+            :expected-wounds expected-wounds
+            :median-damage median-damage
+            :median-wounds median-wounds
+            :expected-kills expected-kills
+            :expected-point-kill-ratio (/ points expected-kills)
+            :median-kills (* median-wounds wounds-needed-to-kill-ratio)
+            :min-wound-probability (get-ccdf-for received-wounds-probability)))))
