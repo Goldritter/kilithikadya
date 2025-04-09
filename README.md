@@ -1,6 +1,7 @@
 # kilithikadya
 
 Kilithikadya (Near-future-to-come) means "The near-future" in Aledari. This Programm should allow to take a peek view into the near future of the possible effects of your decisions during a round of Warhammer 40k. Mainly about the possibilities of wounds and damages your units can dish out against other units. 
+An example Spreadsheet with calculations can be found [here](https://docs.google.com/spreadsheets/d/1-BMw_JhIYTRAWCwF6bjdzlQ30lWMzRbW/edit?usp=sharing&ouid=106005814345395628856&rtpof=true&sd=true) .
 
 ## Usage
 
