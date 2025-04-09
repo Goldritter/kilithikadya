@@ -1361,6 +1361,7 @@ The project is not mature and in constant changes. So bugs can and will be occur
 ## To-Do
 - [] Better documentation.
 - [] Feel no pain calculation.
+- [] Reroll if roll a 1 
 - [] Find a practicable way to handle rounding errors for multiple additions with doubles. 
 
 ## Disclaimer
