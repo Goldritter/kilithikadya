@@ -258,8 +258,11 @@
             :anti anti
             :strength strength
             :toughness toughness
+            :wounds wounds
+            :save save
+            :invul-save invul-save
             :feel-no-pain feel-no-pain
-            :wounds-needed-to-kill wounds-needed-to-kill-ratio
+            :wounds-needed-to-kill (Math/ceil (/ wounds damage))
             :hit-combinations hit-combinations
             :maximal-hits maximal-hits
             :wound-probability wound-probability
